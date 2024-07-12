@@ -1,11 +1,11 @@
-import { TJobItemContent } from "../lib/types";
+import { useActiveId, useActiveJobItem } from "../lib/hooks";
+
 import BookmarkIcon from "./BookmarkIcon";
 
-export default function JobItemContent({
-  jobItemContent,
-}: {
-  jobItemContent: TJobItemContent | null;
-}) {
+export default function JobItemContent() {
+  const { activeId } = useActiveId();
+  const jobItemContent = useActiveJobItem(activeId);
+
   if (!jobItemContent) {
     return <EmptyJobContent />;
   }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TJobItem } from "./types";
+import { TJobItem, TJobItemContent } from "./types";
 import { BASE_API_URL } from "./constants";
 
 export function useActiveId() {
@@ -45,7 +45,9 @@ export function useJobItems(searchText: string) {
 }
 
 export function useActiveJobItem(id: number | null) {
-  const [activeJobItem, setActiveJobItem] = useState(null);
+  const [activeJobItem, setActiveJobItem] = useState<TJobItemContent | null>(
+    null
+  );
 
   useEffect(() => {
     if (!id) return;
@@ -65,5 +67,5 @@ export function useActiveJobItem(id: number | null) {
     }
     fetchDate();
   }, [id]);
-  return { activeJobItem };
+  return activeJobItem;
 }

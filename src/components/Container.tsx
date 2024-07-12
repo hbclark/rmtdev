@@ -1,18 +1,20 @@
-import { TJobItem } from "../lib/types";
+import { TJobItem, TJobItemContent } from "../lib/types";
 import JobItemContent from "./JobItemContent";
 import Sidebar from "./Sidebar";
 
 export default function Container({
   jobItems,
   isLoading,
+  jobItemContent,
 }: {
   jobItems: TJobItem[];
   isLoading: boolean;
+  jobItemContent: TJobItemContent | null;
 }) {
   return (
     <div className="container">
       <Sidebar jobItems={jobItems} isLoading={isLoading} />
-      <JobItemContent />
+      <JobItemContent jobItemContent={jobItemContent} />
     </div>
   );
 }

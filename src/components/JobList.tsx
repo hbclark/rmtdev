@@ -10,15 +10,17 @@ export function JobList({
   isLoading: boolean;
 }) {
   return (
-    <ul className="job-list">
-      {isLoading ? <Spinner /> : null}
-      {!isLoading &&
-        jobItems.map((jobItem) => (
-          <>
-            <JobListItem key={jobItem.id} jobItem={jobItem} />
-          </>
-        ))}
-    </ul>
+    <>
+      <ul className="job-list">
+        {isLoading ? <Spinner /> : null}
+        {!isLoading &&
+          jobItems.map((jobItem) => (
+            <>
+              <JobListItem key={jobItem.id} jobItem={jobItem} />
+            </>
+          ))}
+      </ul>
+    </>
   );
 }
 

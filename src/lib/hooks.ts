@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { TJobItem, TJobItemContent } from "./types";
 import { BASE_API_URL } from "./constants";
+import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export function useActiveId() {
   const [activeId, setActiveId] = useState<number | null>(null);
@@ -8,64 +10,92 @@ export function useActiveId() {
   useEffect(() => {
     const handleHashChange = () => {
       const id = window.location.hash.slice(1);
+      console.log(id);
       setActiveId(+id);
     };
+    handleHashChange();
     window.addEventListener("hashchange", handleHashChange);
     return () => {
       window.removeEventListener("hashchange", handleHashChange);
     };
   }, []);
-  return { activeId };
+  return activeId;
 }
 
-export function useJobItems(searchText: string) {
-  const [jobItems, setJobItems] = useState<TJobItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+type jobItemsApiResponse = {
+  jobItems: TJobItem[];
+  public: boolean;
+  sorted: boolean;
+};
 
-  // console.log(jobItems);
+export function useJobItems(searchText: string) {
+  const { data, isInitialLoading } = useQuery(
+    ["job-items", searchText],
+    async (): Promise<jobItemsApiResponse> => {
+      const res = await fetch(`${BASE_API_URL}?search=${searchText}`);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.description || "Something went wrong");
+      }
+      return data;
+    },
+    {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false, // do not refetch on window focus
+      enabled: Boolean(searchText), // only fetch when searchText is not empty
+      retry: false,
+      onError: (error) => {
+        let message;
+        if (error instanceof Error) {
+          message = error.message;
+        } else if (typeof error === "string") {
+          message = error;
+        } else {
+          message = "An error occurred";
+        }
+        toast.error(message);
+      },
+    }
+  );
+
+  return {
+    jobItems: data?.jobItems || [],
+    isLoading: isInitialLoading,
+  } as const;
+}
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
-    if (!searchText) return;
+    const timeout = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch(`${BASE_API_URL}?search=${searchText}`);
-        const data = await res.json();
-        setIsLoading(false);
-        setJobItems(data.jobItems);
-      } catch (e) {
-        console.log(e);
-      }
+    return () => {
+      clearTimeout(timeout);
     };
-    fetchData();
-  }, [searchText]);
+  }, [value, delay]);
 
-  return { isLoading, jobItems };
+  return debouncedValue;
 }
 
 export function useActiveJobItem(id: number | null) {
-  const [activeJobItem, setActiveJobItem] = useState<TJobItemContent | null>(
-    null
+  const { data, isInitialLoading } = useQuery(
+    ["jobItem", id], // query key is an array of strings and numbers (id) to uniquely identify the query  (useQuery hook)
+    async () => {
+      const res = await fetch(`${BASE_API_URL}/${id}`);
+      const data = await res.json();
+      return data;
+    },
+    {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false, // do not refetch on window focus
+      enabled: !!id, // only fetch when id is not null
+    }
   );
 
-  useEffect(() => {
-    if (!id) return;
-
-    async function fetchDate() {
-      try {
-        const res = await fetch(`${BASE_API_URL}/${id}`);
-        const data = await res.json();
-        setActiveJobItem(data.jobItem);
-
-        if (!res.ok) {
-          console.log("Error");
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    fetchDate();
-  }, [id]);
-  return activeJobItem;
+  const activeJobItem: TJobItemContent = data?.jobItem;
+  const isLoading = isInitialLoading;
+  return { activeJobItem, isLoading };
 }

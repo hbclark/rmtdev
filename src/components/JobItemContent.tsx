@@ -1,10 +1,23 @@
 import { useActiveId, useActiveJobItem } from "../lib/hooks";
 
 import BookmarkIcon from "./BookmarkIcon";
+import Spinner from "./Spinner";
 
 export default function JobItemContent() {
-  const { activeId } = useActiveId();
-  const jobItemContent = useActiveJobItem(activeId);
+  const activeId = useActiveId();
+
+  const { activeJobItem: jobItemContent, isLoading } =
+    useActiveJobItem(activeId);
+  if (isLoading) {
+    return (
+      <section className="job-details">
+        <div>
+          <Spinner />
+        </div>
+        ;
+      </section>
+    );
+  }
 
   if (!jobItemContent) {
     return <EmptyJobContent />;

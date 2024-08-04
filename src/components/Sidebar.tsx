@@ -11,6 +11,8 @@ export default function Sidebar({
   handleCHangePage,
   currentPage,
   totalPages,
+  handleChangeSortBy,
+  sortBy,
 }: {
   jobItems: TJobItem[];
   isLoading: boolean;
@@ -18,12 +20,14 @@ export default function Sidebar({
   handleCHangePage: (direction: "next" | "previous") => void;
   currentPage: number;
   totalPages: number;
+  handleChangeSortBy: (newSortBy: "relevant" | "recent") => void;
+  sortBy: "relevant" | "recent";
 }) {
   return (
     <div className="sidebar">
       <div className="sidebar__top">
         <ResultsCount totalNumberOfResults={totalNumberOfResults} />
-        <SortingControls />
+        <SortingControls onClick={handleChangeSortBy} sortBy={sortBy} />
       </div>
       <JobList jobItems={jobItems} isLoading={isLoading} />
       <PaginationControls

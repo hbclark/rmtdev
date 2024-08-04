@@ -9,6 +9,8 @@ export default function Container({
   handleCHangePage,
   currentPage,
   totalPages,
+  handleChangeSortBy,
+  sortBy,
 }: {
   jobItems: TJobItem[];
   isLoading: boolean;
@@ -16,6 +18,8 @@ export default function Container({
   handleCHangePage: (direction: "next" | "previous") => void;
   currentPage: number;
   totalPages: number;
+  handleChangeSortBy: (newSortBy: "relevant" | "recent") => void;
+  sortBy: "relevant" | "recent";
 }) {
   return (
     <div className="container">
@@ -26,6 +30,8 @@ export default function Container({
         handleCHangePage={handleCHangePage}
         currentPage={currentPage}
         totalPages={totalPages}
+        handleChangeSortBy={handleChangeSortBy}
+        sortBy={sortBy}
       />
       <JobItemContent />
     </div>

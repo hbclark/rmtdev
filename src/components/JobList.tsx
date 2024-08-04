@@ -18,13 +18,11 @@ export function JobList({
         {isLoading ? <Spinner /> : null}
         {!isLoading &&
           jobItems.map((jobItem) => (
-            <>
-              <JobListItem
-                key={jobItem.id}
-                jobItem={jobItem}
-                isActive={jobItem.id === activeId}
-              />
-            </>
+            <JobListItem
+              key={jobItem.id}
+              jobItem={jobItem}
+              isActive={jobItem.id === activeId}
+            />
           ))}
       </ul>
     </>

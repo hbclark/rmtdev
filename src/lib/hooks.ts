@@ -134,7 +134,7 @@ export function useLocalStorage<T>(
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(value));
   }, [value, key]);
-  return [value, setValue] as const;
+  return [value, setValue];
 }
 
 export function useOnClickOutside(
@@ -148,8 +148,6 @@ export function useOnClickOutside(
           (ref) => ref.current && !ref.current.contains(e.target as Node)
         )
       ) {
-        // !e.target.closest(".bookmarks-btn")
-        // !e.target.closest(".bookmarks-popover")
         handler();
       }
     };

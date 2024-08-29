@@ -11,6 +11,7 @@ export function JobList({
   isLoading: boolean;
 }) {
   const activeId = useActiveId();
+  // console.log("JobList", jobItems, isLoading);
 
   return (
     <>
